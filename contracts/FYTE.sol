@@ -1395,6 +1395,7 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
     function buy(uint256 _amount) public payable {
         require(buyPause == false, "Buy is Paused");
         require(msg.value >= FYTECost * _amount, "Insufficient Funds");
+        require(_amount > 0, "Can't Mint 0"); 
         _mint(msg.sender, _amount * 10**18);
     }
 
