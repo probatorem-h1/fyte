@@ -75,20 +75,30 @@ describe("FYTE", function () {
         expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Buy is Paused'");
       }
     })
-    it("Requires Proper Bread (Payment)", async function () {
+    it("Requires Proper Amount of Bread (Payment)", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setBuyPause(false)
+      try {
+        await fyte.buy((1 * 10 ** 18).toString(), { value: (1 * 10 ** 18).toString() })
+        expect(1).to.equal(2);
+      } catch (e) {
+        expect(e.message.includes('insufficient funds for intrinsic transaction cost')).to.equal(true);
+      }
+    })
+    it("Must Buy At Least 1 Ether", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
       await fyte.setBuyPause(false)
       try {
         await fyte.buy(1);
         expect(1).to.equal(2);
       } catch (e) {
-        expect(e.message.includes('insufficient funds for intrinsic transaction cost')).to.equal(true);
+        expect(e.message.includes("reverted with reason string 'Invalid Amount'")).to.equal(true);
       }
     })
     it("Mints Correct Amount of Tokens", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
       await fyte.setBuyPause(false)
-      await fyte.buy('1', { value: '10000000000000000000' })
+      await fyte.buy((1 * 10 ** 18).toString(), { value: (10 * 10 ** 18).toString() })
       expect(await fyte.balanceOf(owner.address)).to.equal('1000000000000000000')
     })
   })
@@ -109,6 +119,7 @@ describe("FYTE", function () {
       }
     })
   })
+
   describe("Settings", function () {
     it("Can Update Claim Pause", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
@@ -153,11 +164,12 @@ describe("FYTE", function () {
       expect(time).to.equal(1)
     })
   })
+
   describe("PullPayment", function () {
     it("Can Pull Payment", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
       await fyte.setBuyPause(false)
-      await fyte.buy('10', { value: '100000000000000000000' })
+      await fyte.buy((10 * 10 ** 18).toString(), { value: (100 * 10 ** 18).toString() })
       provider = ethers.provider;
       let ownerBalance = await provider.getBalance(owner.address)
       let address1Balance = await provider.getBalance(address1.address) 
@@ -165,10 +177,6 @@ describe("FYTE", function () {
       await fyte['release(address)'](address1.address)
       expect(await provider.getBalance(owner.address) > ownerBalance).to.equal(true)
       expect(await provider.getBalance(address1.address)  > address1Balance).to.equal(true)
-
-
-
-
     })
   })
 
