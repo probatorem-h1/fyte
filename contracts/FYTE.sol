@@ -3,20 +3,11 @@
 
 pragma solidity ^0.8.9;
 
-
 // OpenZeppelin Contracts v4.4.1 (finance/PaymentSplitter.sol)
-
-
-
 
 // OpenZeppelin Contracts v4.4.1 (token/ERC20/utils/SafeERC20.sol)
 
-
-
-
 // OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/IERC20.sol)
-
-
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -48,7 +39,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(address owner, address spender)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -93,10 +87,12 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 }
-
-
 
 /**
  * @title SafeERC20
@@ -115,7 +111,10 @@ library SafeERC20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.transfer.selector, to, value)
+        );
     }
 
     function safeTransferFrom(
@@ -124,7 +123,10 @@ library SafeERC20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
+        );
     }
 
     /**
@@ -146,7 +148,10 @@ library SafeERC20 {
             (value == 0) || (token.allowance(address(this), spender) == 0),
             "SafeERC20: approve from non-zero to non-zero allowance"
         );
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.approve.selector, spender, value)
+        );
     }
 
     function safeIncreaseAllowance(
@@ -155,7 +160,14 @@ library SafeERC20 {
         uint256 value
     ) internal {
         uint256 newAllowance = token.allowance(address(this), spender) + value;
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(
+                token.approve.selector,
+                spender,
+                newAllowance
+            )
+        );
     }
 
     function safeDecreaseAllowance(
@@ -165,9 +177,19 @@ library SafeERC20 {
     ) internal {
         unchecked {
             uint256 oldAllowance = token.allowance(address(this), spender);
-            require(oldAllowance >= value, "SafeERC20: decreased allowance below zero");
+            require(
+                oldAllowance >= value,
+                "SafeERC20: decreased allowance below zero"
+            );
             uint256 newAllowance = oldAllowance - value;
-            _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+            _callOptionalReturn(
+                token,
+                abi.encodeWithSelector(
+                    token.approve.selector,
+                    spender,
+                    newAllowance
+                )
+            );
         }
     }
 
@@ -182,18 +204,21 @@ library SafeERC20 {
         // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
         // the target address contains contract code and also asserts for success in the low-level call.
 
-        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        bytes memory returndata = address(token).functionCall(
+            data,
+            "SafeERC20: low-level call failed"
+        );
         if (returndata.length > 0) {
             // Return data is optional
-            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+            require(
+                abi.decode(returndata, (bool)),
+                "SafeERC20: ERC20 operation did not succeed"
+            );
         }
     }
 }
 
-
 // OpenZeppelin Contracts (last updated v4.5.0) (utils/Address.sol)
-
-
 
 /**
  * @dev Collection of functions related to the address type
@@ -250,10 +275,16 @@ library Address {
      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
+        require(
+            address(this).balance >= amount,
+            "Address: insufficient balance"
+        );
 
         (bool success, ) = recipient.call{value: amount}("");
-        require(success, "Address: unable to send value, recipient may have reverted");
+        require(
+            success,
+            "Address: unable to send value, recipient may have reverted"
+        );
     }
 
     /**
@@ -274,7 +305,10 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionCall(address target, bytes memory data)
+        internal
+        returns (bytes memory)
+    {
         return functionCall(target, data, "Address: low-level call failed");
     }
 
@@ -308,7 +342,13 @@ library Address {
         bytes memory data,
         uint256 value
     ) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+        return
+            functionCallWithValue(
+                target,
+                data,
+                value,
+                "Address: low-level call with value failed"
+            );
     }
 
     /**
@@ -323,10 +363,15 @@ library Address {
         uint256 value,
         string memory errorMessage
     ) internal returns (bytes memory) {
-        require(address(this).balance >= value, "Address: insufficient balance for call");
+        require(
+            address(this).balance >= value,
+            "Address: insufficient balance for call"
+        );
         require(isContract(target), "Address: call to non-contract");
 
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         return verifyCallResult(success, returndata, errorMessage);
     }
 
@@ -336,8 +381,17 @@ library Address {
      *
      * _Available since v3.3._
      */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
-        return functionStaticCall(target, data, "Address: low-level static call failed");
+    function functionStaticCall(address target, bytes memory data)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return
+            functionStaticCall(
+                target,
+                data,
+                "Address: low-level static call failed"
+            );
     }
 
     /**
@@ -363,8 +417,16 @@ library Address {
      *
      * _Available since v3.4._
      */
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
-        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+    function functionDelegateCall(address target, bytes memory data)
+        internal
+        returns (bytes memory)
+    {
+        return
+            functionDelegateCall(
+                target,
+                data,
+                "Address: low-level delegate call failed"
+            );
     }
 
     /**
@@ -413,10 +475,7 @@ library Address {
     }
 }
 
-
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
-
-
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -438,7 +497,6 @@ abstract contract Context {
     }
 }
 
-
 /**
  * @title PaymentSplitter
  * @dev This contract allows to split Ether payments among a group of accounts. The sender does not need to be aware
@@ -459,7 +517,11 @@ abstract contract Context {
 contract PaymentSplitter is Context {
     event PayeeAdded(address account, uint256 shares);
     event PaymentReleased(address to, uint256 amount);
-    event ERC20PaymentReleased(IERC20 indexed token, address to, uint256 amount);
+    event ERC20PaymentReleased(
+        IERC20 indexed token,
+        address to,
+        uint256 amount
+    );
     event PaymentReceived(address from, uint256 amount);
 
     uint256 private _totalShares;
@@ -480,7 +542,10 @@ contract PaymentSplitter is Context {
      * duplicates in `payees`.
      */
     constructor(address[] memory payees, uint256[] memory shares_) payable {
-        require(payees.length == shares_.length, "PaymentSplitter: payees and shares length mismatch");
+        require(
+            payees.length == shares_.length,
+            "PaymentSplitter: payees and shares length mismatch"
+        );
         require(payees.length > 0, "PaymentSplitter: no payees");
 
         for (uint256 i = 0; i < payees.length; i++) {
@@ -541,7 +606,11 @@ contract PaymentSplitter is Context {
      * @dev Getter for the amount of `token` tokens already released to a payee. `token` should be the address of an
      * IERC20 contract.
      */
-    function released(IERC20 token, address account) public view returns (uint256) {
+    function released(IERC20 token, address account)
+        public
+        view
+        returns (uint256)
+    {
         return _erc20Released[token][account];
     }
 
@@ -560,7 +629,11 @@ contract PaymentSplitter is Context {
         require(_shares[account] > 0, "PaymentSplitter: account has no shares");
 
         uint256 totalReceived = address(this).balance + totalReleased();
-        uint256 payment = _pendingPayment(account, totalReceived, released(account));
+        uint256 payment = _pendingPayment(
+            account,
+            totalReceived,
+            released(account)
+        );
 
         require(payment != 0, "PaymentSplitter: account is not due payment");
 
@@ -579,8 +652,13 @@ contract PaymentSplitter is Context {
     function release(IERC20 token, address account) public virtual {
         require(_shares[account] > 0, "PaymentSplitter: account has no shares");
 
-        uint256 totalReceived = token.balanceOf(address(this)) + totalReleased(token);
-        uint256 payment = _pendingPayment(account, totalReceived, released(token, account));
+        uint256 totalReceived = token.balanceOf(address(this)) +
+            totalReleased(token);
+        uint256 payment = _pendingPayment(
+            account,
+            totalReceived,
+            released(token, account)
+        );
 
         require(payment != 0, "PaymentSplitter: account is not due payment");
 
@@ -600,7 +678,8 @@ contract PaymentSplitter is Context {
         uint256 totalReceived,
         uint256 alreadyReleased
     ) private view returns (uint256) {
-        return (totalReceived * _shares[account]) / _totalShares - alreadyReleased;
+        return
+            (totalReceived * _shares[account]) / _totalShares - alreadyReleased;
     }
 
     /**
@@ -609,9 +688,15 @@ contract PaymentSplitter is Context {
      * @param shares_ The number of shares owned by the payee.
      */
     function _addPayee(address account, uint256 shares_) private {
-        require(account != address(0), "PaymentSplitter: account is the zero address");
+        require(
+            account != address(0),
+            "PaymentSplitter: account is the zero address"
+        );
         require(shares_ > 0, "PaymentSplitter: shares are 0");
-        require(_shares[account] == 0, "PaymentSplitter: account already has shares");
+        require(
+            _shares[account] == 0,
+            "PaymentSplitter: account already has shares"
+        );
 
         _payees.push(account);
         _shares[account] = shares_;
@@ -619,8 +704,6 @@ contract PaymentSplitter is Context {
         emit PayeeAdded(account, shares_);
     }
 }
-
-
 
 interface IERC165 {
     /**
@@ -1365,7 +1448,11 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryAdd(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         unchecked {
             uint256 c = a + b;
             if (c < a) return (false, 0);
@@ -1378,7 +1465,11 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function trySub(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         unchecked {
             if (b > a) return (false, 0);
             return (true, a - b);
@@ -1390,7 +1481,11 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMul(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         unchecked {
             // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
             // benefit is lost if 'b' is also tested.
@@ -1407,7 +1502,11 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryDiv(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a / b);
@@ -1419,7 +1518,11 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMod(uint256 a, uint256 b)
+        internal
+        pure
+        returns (bool, uint256)
+    {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a % b);
@@ -1584,39 +1687,65 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
     bool public buyPause = true;
 
     mapping(address => uint256) public claimChecker;
+    mapping(address => bool) public claimedFirstTime;
 
-    constructor(address _V1Address, address _V2Address, address[] memory _payees, uint256[] memory _shares) ERC20("FYTE", "FYTE") PaymentSplitter(_payees, _shares) {
+    constructor(
+        address _V1Address,
+        address _V2Address,
+        address[] memory _payees,
+        uint256[] memory _shares
+    ) ERC20("FYTE", "FYTE") PaymentSplitter(_payees, _shares) {
         V1Address = _V1Address;
         V2Address = _V2Address;
     }
 
     function claim() public {
         require(claimPause == false, "Claim is Paused");
-        require(
-            timeToClaim() == 0,
-            "Tokens Already Claimed"
-        );
-        claimChecker[msg.sender] = block.timestamp;
-        uint256 V1Balance = IERC721(V1Address).balanceOf(msg.sender);
-        uint256 V2Balance = IERC721(V2Address).balanceOf(msg.sender);
-        uint256 totalMint = (V1Balance * V1ClaimAmount) +
-            (V2Balance * V2ClaimAmount);
-        if (totalMint > 0) {
-            _mint(msg.sender, totalMint);
+        require(timeToClaim() == 0, "Tokens Already Claimed");
+        uint256 mintAmount = claimAmount();
+        require(mintAmount > 0, "Nothing to Claim");
+        if (!claimedFirstTime[msg.sender]) {
+            claimedFirstTime[msg.sender] = true;
         }
+        claimChecker[msg.sender] = block.timestamp;
+        _mint(msg.sender, mintAmount);
     }
 
     function buy(uint256 _amount) public payable {
         require(buyPause == false, "Buy is Paused");
-        require(_amount >= 1 ether, "Invalid Amount");
-        require(msg.value >= FYTECost * _amount.div(10 ** 18), "Insufficient Funds");
-        require(_amount > 0, "Can't Mint 0"); 
+        require(_amount >= 1 ether, "Must Buy 1 Token");
+        require(
+            msg.value >= FYTECost * _amount.div(10**18),
+            "Insufficient Funds"
+        );
+        require(_amount > 0, "Can't Mint 0");
         _mint(msg.sender, _amount);
     }
 
+    function claimAmount() public view returns (uint256) {
+        uint256 multiplier;
+        if (claimedFirstTime[msg.sender] == false) {
+            multiplier = 1;
+        } else {
+            uint256 elapsedTime = block.timestamp - claimChecker[msg.sender];
+            multiplier = elapsedTime.div(timeBetweenClaim);
+        }
+        uint256 V1Balance = IERC721(V1Address).balanceOf(msg.sender);
+        uint256 V2Balance = IERC721(V2Address).balanceOf(msg.sender);
+        uint256 totalMint = (
+            (V1Balance.mul(V1ClaimAmount))
+                .add((V2Balance.mul(V2ClaimAmount)))
+                .mul(multiplier)
+        );
+        return totalMint;
+    }
+
     function timeToClaim() public view returns (uint256) {
+        if (claimedFirstTime[msg.sender] == false) {
+            return 0;
+        }
         uint256 elapsedTime = block.timestamp - claimChecker[msg.sender];
-        if(elapsedTime >= timeBetweenClaim){
+        if (elapsedTime >= timeBetweenClaim) {
             return 0;
         }
         return timeBetweenClaim - elapsedTime;
@@ -1656,6 +1785,3 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
         timeBetweenClaim = _seconds;
     }
 }
-
-
-

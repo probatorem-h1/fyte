@@ -27,6 +27,60 @@ describe("FYTE", function () {
       expect(await fyte.V2Address.call()).to.equal(nftV2.address);
     });
   })
+  describe("Calculate Claim", function () {
+    it("Calculates First Claim", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      const claimAmount = await fyte.claimAmount();
+      expect(claimAmount).to.equal((15 * 10 ** 18).toString())
+    })
+
+    it("Calculates Claim Multiplier", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setClaimPause(false);
+      await fyte.setTimeBetweenClaim(60);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      await fyte.claim();
+      await network.provider.send("evm_increaseTime", [360])
+      await network.provider.send("evm_mine")
+      const claimAmount = await fyte.claimAmount();
+      expect(claimAmount).to.equal((90 * 10 ** 18).toString())
+    })
+  })
+  describe("Time To Claim", function () {
+    it("Calculates First Claim Scenario", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      const timeToClaim = await fyte.timeToClaim();
+      expect(timeToClaim).to.equal(0)
+    })
+    it("Returns Time Until Claim", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setTimeBetweenClaim(60);
+      await fyte.setClaimPause(false);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      await fyte.claim()
+      const timeToClaim = await fyte.timeToClaim();
+      expect(timeToClaim).to.equal(60)
+    })
+    it("Calculates When Ready To Claim", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setTimeBetweenClaim(60);
+      await fyte.setClaimPause(false);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      await fyte.claim()
+      await network.provider.send("evm_increaseTime", [60])
+      await network.provider.send("evm_mine")
+      const timeToClaim = await fyte.timeToClaim();
+      expect(timeToClaim).to.equal(0)
+    })
+
+  })
   describe("Claim", function () {
     it("Can Only Claim When Unpaused", async function () {
       const { fyte, nftV1, nftV2 } = await loadFixture(deployContracts);
@@ -39,9 +93,11 @@ describe("FYTE", function () {
     });
     it("Can Only Claim After Time Elapsed", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
-      await nftV1.mint(1)
-      await fyte.setTimeBetweenClaim(2);
+
+      await fyte.setTimeBetweenClaim(60);
       await fyte.setClaimPause(false);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
       try {
         await fyte.claim();
         await fyte.claim();
@@ -49,11 +105,22 @@ describe("FYTE", function () {
       } catch (e) {
         expect(e.message).to.equal("VM Exception while processing transaction: reverted with reason string 'Tokens Already Claimed'");
       }
-      await delay(2000)
-      await fyte.claim();
-      let tokenBalance = (await fyte.balanceOf(owner.address)).toString()
-      expect(tokenBalance).to.equal("20000000000000000000");
     });
+    it("Multiplies Claim Amount By Time", async function () {
+      const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setTimeBetweenClaim(60);
+      await fyte.setClaimPause(false);
+      await nftV1.mint(1)
+      await nftV2.mint(1)
+      await fyte.claim();
+      await network.provider.send("evm_increaseTime", [120])
+      await network.provider.send("evm_mine")
+      await fyte.claim()
+      let tokenBalance = (await fyte.balanceOf(owner.address)).toString()
+      expect(tokenBalance).to.equal('45000000000000000000');
+
+    })
+
     it("Claims Correct Amount of Tokens", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
       await nftV1.mint(2)
@@ -92,7 +159,7 @@ describe("FYTE", function () {
         await fyte.buy(1);
         expect(1).to.equal(2);
       } catch (e) {
-        expect(e.message.includes("reverted with reason string 'Invalid Amount'")).to.equal(true);
+        expect(e.message.includes("reverted with reason string 'Must Buy 1 Token'")).to.equal(true);
       }
     })
     it("Mints Correct Amount of Tokens", async function () {
@@ -172,13 +239,14 @@ describe("FYTE", function () {
       await fyte.buy((10 * 10 ** 18).toString(), { value: (100 * 10 ** 18).toString() })
       provider = ethers.provider;
       let ownerBalance = await provider.getBalance(owner.address)
-      let address1Balance = await provider.getBalance(address1.address) 
+      let address1Balance = await provider.getBalance(address1.address)
       await fyte['release(address)'](owner.address)
       await fyte['release(address)'](address1.address)
       expect(await provider.getBalance(owner.address) > ownerBalance).to.equal(true)
-      expect(await provider.getBalance(address1.address)  > address1Balance).to.equal(true)
+      expect(await provider.getBalance(address1.address) > address1Balance).to.equal(true)
     })
   })
+
 
 
 
