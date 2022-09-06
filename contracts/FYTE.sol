@@ -1724,7 +1724,7 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
 
     function claimAmount() public view returns (uint256) {
         uint256 multiplier;
-        if (claimedFirstTime[msg.sender] == false) {
+        if (claimChecker[msg.sender] == 0) {
             multiplier = 1;
         } else {
             uint256 elapsedTime = block.timestamp - claimChecker[msg.sender];
@@ -1741,7 +1741,7 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
     }
 
     function timeToClaim() public view returns (uint256) {
-        if (claimedFirstTime[msg.sender] == false) {
+        if (claimChecker[msg.sender] == 0) {
             return 0;
         }
         uint256 elapsedTime = block.timestamp - claimChecker[msg.sender];
@@ -1752,6 +1752,10 @@ contract FYTE is ERC20, Ownable, PaymentSplitter {
     }
 
     //Only Owner
+
+    function setPrice(uint256 _value) public onlyOwner {
+        FYTECost = _value;
+    }
 
     function setClaimPause(bool _value) public onlyOwner {
         claimPause = _value;

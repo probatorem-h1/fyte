@@ -30,8 +30,11 @@ describe("FYTE", function () {
   describe("Calculate Claim", function () {
     it("Calculates First Claim", async function () {
       const { fyte, nftV1, nftV2, owner, address1 } = await loadFixture(deployContracts);
+      await fyte.setTimeBetweenClaim(60);
       await nftV1.mint(1)
       await nftV2.mint(1)
+      await network.provider.send("evm_increaseTime", [360])
+      await network.provider.send("evm_mine")
       const claimAmount = await fyte.claimAmount();
       expect(claimAmount).to.equal((15 * 10 ** 18).toString())
     })
